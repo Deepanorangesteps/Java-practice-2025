@@ -1,0 +1,419 @@
+1.ENCAPSULATION
+Instead of allowing direct modification of fields, access is provided through well-defined methods,
+ which can apply validation, transformation, or additional logic.
+
+Because of this, the internal representation can change later without affecting other parts of the program,
+ reducing tight coupling.
+ 
+ True encapsulation requires the object to maintain authority over how and when its data changes. Otherwise,
+ the class becomes a passive data holder rather than a responsible unit of behavior.
+ -----------------------------------------------
+ 🧠 Inheritance
+ --------------------------------------
+ Inheritance allows a class to reuse properties and behavior from another class.
+ Main goals:
+
+✔ reuse code
+✔ create hierarchy
+✔ enable polymorphism
+✔ allow specialization
+Child can provide specific behavior.
+class Animal {
+    void sound() {
+        System.out.println("Generic sound");
+    }
+}
+
+class Dog extends Animal {
+    @Override
+    void sound() {
+        System.out.println("Bark");
+    }
+	6) Constructor behavior
+
+Parent constructor runs first.
+Tight coupling problem 🚩
+
+Child becomes dependent on parent implementation.
+
+If parent changes → child may break.
+
+So inheritance increases coupling.
+
+This is why modern design prefers composition in many cases.
+Why composition is powerful ⭐
+
+Because it gives:
+
+✔ flexibility
+✔ replaceable parts
+✔ lower coupling
+✔ easier testing
+✔ avoids fragile hierarchies
+class Engine {
+    void start() {
+        System.out.println("Engine started");
+    }
+}
+class Car {
+
+    // HAS-A relationship
+    private Engine engine;
+
+    public Car(Engine engine) {
+        this.engine = engine;
+    }
+
+    public void start() {
+        engine.start();  // delegation
+    }
+}
+STATIC IN INHERITANCE 
+class Parent {
+    static int a = printA();
+
+    static {
+        System.out.println("Parent static block");
+    }
+
+    static int printA() {
+        System.out.println("Parent static variable");
+        return 10;
+    }
+}
+
+class Child extends Parent {
+    static int b = printB();
+
+    static {
+        System.out.println("Child static block");
+    }
+
+    static int printB() {
+        System.out.println("Child static variable");
+        return 20;
+    }
+}
+IF we create an object of the child 
+now the out put is :
+Parent static variable
+Parent static block
+Child static variable
+Child static block
+Why parent first?
+Because parent must be loaded before child.
+------------------------------------
+🔥 What Is a Constructor?
+-----------------------------------------------------------------------
+A constructor is a special method used to initialize a new object when it is created.
+
+It runs automatically when you use new.
+
+It has:
+
+Same name as class
+
+No return type (not even void)
+🧠 What Does a Constructor Actually Do?
+
+Three main things:
+Initializes object state (assign values)
+Enforces mandatory dependencies
+Ensures object is valid immediately after creation
+It does NOT:
+Allocate memory (JVM does that)
+Return the object (JVM handles it)
+It only initializes.
+🔥 Important Rule (Memorize This)
+
+If parent has only parameterized constructors,
+child must explicitly call one of them using super(args).
+
+class A {
+    A() {
+        show();
+    }
+
+    void show() {
+        System.out.println("A");
+    }
+}
+
+class B extends A {
+    int x = 10;
+
+    void show() {
+        System.out.println(x);
+    }
+}
+What prints when:
+
+new B(); see here it prints the x becuase if we create an object of B first call the parent constructor
+but it we are calling the same method inside the constructor 
+show() is overridden in B.
+
+So dynamic dispatch applies.
+
+Even though we are inside parent constructor,
+the actual object is B. 
+B.show()
+----------------------------------
+🔹 final Keyword
+----------------------------------
+final means: cannot be changed.
+
+It can apply to:
+
+1️⃣ Variable
+
+Value cannot be reassigned.
+Why Make a Method Final?
+
+To:
+
+Prevent overriding
+
+Preserve behavior
+
+Ensure security
+
+Avoid broken polymorphism
+
+Example:
+If you don’t want subclasses modifying critical logic.
+------------------
+ABSTRACT METHOD 
+-------------------------------
+No body
+
+Must be implemented by concrete subclass
+
+Important Rules
+
+Abstract class can have:
+
+Concrete methods
+
+Abstract methods
+
+Constructors
+
+Variables
+
+If a class has even one abstract method → class must be abstract.
+
+Abstract method cannot be:
+
+private
+
+final
+
+static
+
+Because:
+
+private → cannot override
+
+final → cannot override
+
+static → not polymorphic
+------------------------------------
+⚖ final vs abstract
+final	                          abstract
+Prevents inheritance	        Requires inheritance
+Prevents overriding	            Requires overriding
+Complete behavior	            Incomplete behavior
+---------------------------------
+Interface in Java
+What is an Interface?
+
+An interface is a contract — it tells what a class should do, not how to do it.
+Questions
+👉 Why interface?
+To achieve abstraction
+To support multiple inheritance
+To create loosely coupled code
+
+👉 Can we create object of interface? ❌ No
+👉 Can interface have constructor?❌ No
+2. Default Methods (Java 8+)
+Why introduced?
+Before Java 8, adding a method to an interface would break all implementing classes.
+Defined using default keyword
+Have method body
+Can be overridden
+
+interface A {
+    default void show() { System.out.println("A"); }
+}
+
+interface B {
+    default void show() { System.out.println("B"); }
+}
+
+class Test implements A, B {
+    public void show() {
+        A.super.show(); // must resolve conflict
+    }
+}
+ in the above code Test implement A and B both have default method so we must override this show but 
+ if Test impleemnt only A means not compulsary to override that default show method 
+ 👉 Why default method?
+To provide backward compatibility
+👉 Can default methods be overridden?
+✅ Yes
+
+3. Abstract Class vs Interface
+
+This is a VERY IMPORTANT interview question 🔥
+
+Feature	                    Abstract Class	                            Interface
+Methods	                  Abstract + Concrete	                 Abstract + Default + Static
+Variables	             Can have instance variables	             Only constants
+Constructor	                    ✅ Yes	                                  ❌ No
+Multiple Inheritance	        ❌ No	                                  ✅ Yes
+Access Modifiers	              Any	                                Mostly public
+Performance	                 Faster (slightly)	                       Slight overhead
+
+When to Use?
+👉 Use Interface when:
+You want multiple inheritance
+You define a contract
+
+👉 Use Abstract Class when:
+You want common code
+You need state (instance variables)
+
+-----------
+1️⃣ What is Concurrency?
+Definition
+Concurrency means:
+Multiple tasks making progress at the same time.
+
+In Java, concurrency is achieved using threads.
+🔥 PART 1 — What is Multithreading?
+-----------------------------------------
+Multithreading = Multiple threads executing inside the same process.
+
+A thread is a lightweight unit of execution.
+
+✅ Method 1: Extend Thread
+✅ Method 2 (Preferred): Implement Runnable
+
+In Java multithreading, both extends Thread and implements Runnable are correct, 
+but in industry practice, implements Runnable is preferred in most cases.
+
+
+✅ 2️⃣ Implementing Runnable (Preferred
+You can still extend another class
+Better separation of task and thread
+More flexible
+Works well with thread pools and Executor framework
+Industry standard approach
+✅ What is a Race Condition in Java?
+
+A race condition happens when:
+
+🔥 Two or more threads access shared data at the same time, and the final result depends on the order in which they execute.
+
+
+🛡 2️⃣ What is Thread Safety?
+✅ Definition:
+A class or method is thread-safe if:
+It works correctly even when multiple threads access it at the same time.
+That means:
+No data corruption
+No inconsistent state
+No unexpected behavior
+💡 How to Achieve Thread Safety
+synchronized
+Locks (ReentrantLock)
+Atomic classes
+Immutable objects
+Concurrent collections
+EXAMPLE:synchronized void increment() {
+    count++;
+}
+
+2️⃣ What is a Race Condition?
+--------------
+Definition
+A race condition occurs when:
+Two or more threads access shared data simultaneously and the final result depends on the timing of execution.
+
+so how to fix this race condition 
+3️⃣ Fix Using synchronized
+What is synchronized?
+--------------------
+synchronized ensures:
+Only one thread can enter the critical section at a time.
+5️⃣ Lock (Explicit Lock)
+-------------------------
+Java provides advanced locking via:ReentrantLock
+How it works:
+You manually call lock()
+You must manually call unlock()
+Usually placed in finally block to avoid bugs
+
+🔥 Key Difference Summary
+Feature	                  synchronized	     Lock
+Automatic release	         ✅ Yes	         ❌ No
+Manual unlock	             ❌ No	         ✅ Yes
+Try without waiting	         ❌ No	         ✅ Yes
+Timeout	                     ❌ No	         ✅ Yes
+Interruptible wait	         ❌ No	         ✅ Yes
+Fairness option	             ❌ No	         ✅ Yes
+Simpler to use	             ✅ Yes	         ❌ Slightly complex
+
+Important Concept******
+-----------------------
+synchronized is block-level locking
+Lock is object-level explicit locking
+But internally, both use similar JVM monitor mechanisms — Lock just gives you more control.
+
+⚡ 3️⃣ What is volatile in Java?
+----------------------------------------------
+✅ Definition:
+volatile is a keyword that ensures:
+Changes made by one thread to a variable are immediately visible to other threads.
+
+🔥 When To Use volatile
+
+Use it when:
+One thread writes
+Other threads only read
+No compound operations (like ++, +=)
+
+What Is ExecutorService?
+--------------------------------------
+Instead of manually creating threads: new Thread(() -> {}).start();
+🔹 What It Does
+
+ExecutorService:
+Manages a pool of threads
+Reuses threads
+Controls number of threads
+Makes concurrency easier
+
+❌ Don’t use new Thread().start() repeatedly
+✅ Use a thread pool (ExecutorService) to manage threads
+
+
+
+
+
+
+
+
+
+
+
+
+
+synnchronised asynchronised
+builder desing pattern ,factory desing pattern ,
+staartergy pattern ,solid principle ,
+memory leakage in java 
+diff arraylist linked list 
+internal working of hashmap before java8 and after java 8 
+functional interfaces 
