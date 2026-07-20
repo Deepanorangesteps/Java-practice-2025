@@ -43,5 +43,21 @@ public class Main {
         thread1.join();
         thread2.join();
         System.out.println(counter.count);
+    //    TestClass t = new TestClass();
+    }
+
+    public static class TestClass implements Runnable {
+Thread t1 ;
+        public TestClass(){
+            this.t1 = new Thread(this);
+            t1.start();
+        }
+        /**
+         * Runs this operation.
+         */
+        @Override
+        public void run() {
+            System.out.println("thread is run");
+        }
     }
 }

@@ -3,7 +3,7 @@ package multithreading.agni.producerconsumer;
 import java.util.LinkedList;
 import java.util.Queue;
 
-public class Buffer {
+public class  Buffer {
 
 	private Queue<Integer> queue = new LinkedList<>();
 	private int size = 5;
